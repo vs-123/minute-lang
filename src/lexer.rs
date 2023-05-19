@@ -78,7 +78,7 @@ impl Lexer {
                     })
                 }
 
-                other => self.throw_err(format!("Invalid character '{}'", other)),
+                other => self.throw_err(format!("Unexpected character '{}'", other)),
             }
 
             self.next();
