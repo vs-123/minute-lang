@@ -23,4 +23,5 @@ pub struct Location {
     pub end_line: usize,
 
     pub file_path: String,
+    pub line: String,
 }

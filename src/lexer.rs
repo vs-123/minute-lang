@@ -55,6 +55,7 @@ impl Lexer {
                             end_line: current_line_number,
             
                             file_path: self.file_path.clone(),
+                            line: self.current_line(),
                         },
                     })
                 }
@@ -74,6 +75,7 @@ impl Lexer {
                             end_line: current_line_number,
             
                             file_path: self.file_path.clone(),
+                            line: self.current_line(),
                         },
                     })
                 }
@@ -107,6 +109,7 @@ impl Lexer {
                 end_line: self.current_line_number(),
 
                 file_path: self.file_path.clone(),
+                line: self.current_line(),
             },
         })
     }
@@ -142,6 +145,7 @@ impl Lexer {
                 end_line: self.current_line_number(),
 
                 file_path: self.file_path.clone(),
+                line: self.current_line(),
             },
         })
     }
@@ -180,6 +184,11 @@ impl Lexer {
         self.line_start_indices.len()
     }
 
+    #[inline]
+    fn current_line(&self) -> String {
+        self.source_code_lines[self.current_line_number() - 1].clone()
+    }
+
     fn throw_err<T: Into<String>>(&self, msg: T) {
         let current_line_number = self.current_line_number();
         let current_line_number_spaces = " ".repeat(current_line_number.to_string().len());
@@ -193,7 +202,7 @@ impl Lexer {
         println!(
             " {} | {}",
             current_line_number,
-            self.source_code_lines[current_line_number - 1]
+            self.current_line(),
         );
         println!(" {} | {}^", current_line_number_spaces, arrow_spaces);
 
