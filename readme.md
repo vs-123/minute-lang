@@ -16,4 +16,6 @@ print("Hello World");
 ```
 
 ## Status
-Implementing the Lexer as of now
+Implemented enough of lexer to lex hello world
+
+Implementing the parser as of now
