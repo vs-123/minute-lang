@@ -40,6 +40,44 @@ impl Lexer {
                     self.eat_string();
                 }
 
+                '(' => {
+                    let current_col = self.current_col();
+                    let current_line_number = self.current_line_number();
+
+                    self.output_tokens.push(Token {
+                        kind: TokenKind::OParen,
+                        value: String::from("("),
+                        location: Location {
+                            start_col: current_col,
+                            start_line: current_line_number,
+            
+                            end_col: current_col,
+                            end_line: current_line_number,
+            
+                            file_path: self.file_path.clone(),
+                        },
+                    })
+                }
+
+                ')' => {
+                    let current_col = self.current_col();
+                    let current_line_number = self.current_line_number();
+
+                    self.output_tokens.push(Token {
+                        kind: TokenKind::CParen,
+                        value: String::from(")"),
+                        location: Location {
+                            start_col: current_col,
+                            start_line: current_line_number,
+            
+                            end_col: current_col,
+                            end_line: current_line_number,
+            
+                            file_path: self.file_path.clone(),
+                        },
+                    })
+                }
+
                 other => self.throw_err(format!("Invalid character '{}'", other)),
             }
 
