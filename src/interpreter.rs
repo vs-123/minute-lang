@@ -1,6 +1,9 @@
-use std::io::{Write, self};
+use std::io::{self, Write};
 
-use crate::{ast::{Node, NodeKind}, tokens::{Location, TokenKind}};
+use crate::{
+    ast::{Node, NodeKind},
+    tokens::{Location, TokenKind},
+};
 
 #[derive(Clone)]
 pub struct Interpreter {
@@ -9,9 +12,7 @@ pub struct Interpreter {
 
 impl Interpreter {
     pub fn new(input_nodes: Vec<Node>) -> Self {
-        Self {
-            input_nodes,
-        }
+        Self { input_nodes }
     }
 
     pub fn interpret(&mut self) {
@@ -26,40 +27,32 @@ impl Interpreter {
         let node_location = node.location.clone();
 
         match node_kind {
-            NodeKind::FunctionCall(name, arguments) => {
-                match name.as_str() {
-                    "print" => {
-                        for argument in arguments.iter() {
-                            match &argument.kind {
-                                NodeKind::String(argument) => {
-                                    let mut stdout = io::stdout();
-                                    stdout.write(argument.as_bytes()).and(stdout.flush()).ok();
-                                }
+            NodeKind::FunctionCall(name, arguments) => match name.as_str() {
+                "print" => {
+                    for argument in arguments.iter() {
+                        match &argument.kind {
+                            NodeKind::String(argument) => {
+                                let mut stdout = io::stdout();
+                                stdout.write(argument.as_bytes()).and(stdout.flush()).ok();
+                            }
 
-                                _ => {
-                                    self.throw_err(format!(
+                            _ => {
+                                self.throw_err(format!(
                                         "Invalid argument of kind '{:?}' for function '{}', expected of kind 'String'",
                                         argument.kind, name
                                     ), node_location.clone());
-                                }
                             }
                         }
                     }
-
-                    other => {
-                        self.throw_err(format!(
-                            "Invalid function '{}'",
-                            other
-                        ), node_location);
-                    }
                 }
-            }
+
+                other => {
+                    self.throw_err(format!("Invalid function '{}'", other), node_location);
+                }
+            },
 
             other => {
-                self.throw_err(format!(
-                    "Unimplemented node '{:?}'",
-                    other
-                ), node_location);
+                self.throw_err(format!("Unimplemented node '{:?}'", other), node_location);
             }
         }
     }
@@ -69,9 +62,16 @@ impl Interpreter {
 
         println!("[Error]");
         println!("{}\n", msg.into());
-        println!("[Location] {}:{}:{}", node_location.file_path, node_location.start_line, node_location.start_col);
+        println!(
+            "[Location] {}:{}:{}",
+            node_location.file_path, node_location.start_line, node_location.start_col
+        );
         println!(" {} |", line_number_spaces);
         println!(" {} | {}", node_location.start_line, node_location.line);
-        println!(" {} | {}", line_number_spaces, "^".repeat(node_location.line.len()));
+        println!(
+            " {} | {}",
+            line_number_spaces,
+            "^".repeat(node_location.line.len())
+        );
     }
 }

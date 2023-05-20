@@ -51,8 +51,7 @@ impl Parser {
                             TokenKind::CParen => break,
 
                             TokenKind::String => {
-                                let mut new_value = self.current_token().value
-                                    .replace("\\n", "\n");
+                                let mut new_value = self.current_token().value.replace("\\n", "\n");
 
                                 arguments.push(Node {
                                     kind: NodeKind::String(new_value),
@@ -62,12 +61,8 @@ impl Parser {
 
                             TokenKind::Comma => {}
 
-                            other => {
-                                self.throw_err(format!(
-                                    "Unexpected token {:?} for arguments",
-                                    other
-                                ))
-                            },
+                            other => self
+                                .throw_err(format!("Unexpected token {:?} for arguments", other)),
                         }
 
                         self.expect_next_either(&NEXT_ARGUMENT_TOKENS);
@@ -77,11 +72,10 @@ impl Parser {
                     self.expect_next(TokenKind::Semicolon);
                     self.next();
 
-                    self.output_nodes
-                        .push(Node {
-                            kind: NodeKind::FunctionCall(function_name, arguments),
-                            location: self.current_token().location,
-                        });
+                    self.output_nodes.push(Node {
+                        kind: NodeKind::FunctionCall(function_name, arguments),
+                        location: self.current_token().location,
+                    });
                 }
 
                 other => self.throw_err(format!("Unexpected token kind '{:?}'", other,)),
