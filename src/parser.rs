@@ -28,6 +28,13 @@ impl Parser{
                 //      ^^^^^
                 TokenKind::Identifier => {
                     self.expect_next(TokenKind::OParen);
+                    self.next();
+                    self.expect_next_either(&[TokenKind::CParen, TokenKind::String]);
+                    self.next();
+                    self.expect_next(TokenKind::CParen);
+                    self.next();
+                    self.expect_next(TokenKind::Semicolon);
+                    self.next();
                 }
 
                 other => {
@@ -71,6 +78,27 @@ impl Parser{
             self.throw_err(format!(
                 "Expected token after '{}' to be of kind '{:?}', but found '{}' which is of kind '{:?}'",
                 current_token.value, expected_kind, next_token.value, next_token.kind
+            ));
+        }
+    }
+
+    fn expect_next_either(&mut self, expected_kinds: &[TokenKind]) {
+        let next_token = self.peek();
+        let current_token = self.current_token();
+
+        if next_token.is_none() {
+            self.throw_err(format!(
+                "Expected token after '{}' to be either of kinds '{:?}', but is end of file.",
+                current_token.value, expected_kinds
+            ));
+        }
+
+        let next_token = next_token.unwrap();
+
+        if !expected_kinds.contains(&next_token.kind) {
+            self.throw_err(format!(
+                "Expected token after '{}' to be either of kinds '{:?}', but found '{}' which is of kind '{:?}'.",
+                current_token.value, expected_kinds, next_token.value, next_token.kind
             ));
         }
     }

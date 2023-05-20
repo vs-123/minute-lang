@@ -5,6 +5,9 @@ pub enum TokenKind {
 
     OParen,
     CParen,
+
+    Comma,
+    Semicolon,
 }
 
 #[derive(Clone, Debug, PartialEq)]
