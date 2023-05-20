@@ -29,12 +29,16 @@ impl Parser{
                 // E.g. print()
                 //      ^^^^^
                 TokenKind::Identifier => {
+                    let function_name = self.current_token().value;
+
                     self.expect_next(TokenKind::OParen);
                     self.next();
                     self.expect_next_either(&NEXT_ARGUMENT_TOKENS);
                     self.next();
 
                     // Arguments
+
+                    let mut arguments = Vec::<Node>::new();
 
                     loop {
                         let current_token = self.current_token();
@@ -51,6 +55,8 @@ impl Parser{
 
                     self.expect_next(TokenKind::Semicolon);
                     self.next();
+
+                    self.output_nodes.push(Node::FunctionCall(function_name, arguments));
                 }
 
                 other => {
