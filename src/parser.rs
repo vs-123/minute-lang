@@ -51,7 +51,7 @@ impl Parser {
                             TokenKind::CParen => break,
 
                             TokenKind::String => {
-                                let mut new_value = self.current_token().value.replace("\\n", "\n");
+                                let new_value = self.current_token().value.replace("\\n", "\n");
 
                                 arguments.push(Node {
                                     kind: NodeKind::String(new_value),
@@ -146,11 +146,6 @@ impl Parser {
     #[inline]
     fn current_token(&self) -> Token {
         self.input_tokens[self.current_token_index].clone()
-    }
-
-    #[inline]
-    fn is_last_token(&self) -> bool {
-        self.current_token_index >= self.input_tokens_length
     }
 
     #[inline]

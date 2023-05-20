@@ -2,7 +2,7 @@ use std::io::{self, Write};
 
 use crate::{
     ast::{Node, NodeKind},
-    tokens::{Location, TokenKind},
+    tokens::{Location},
 };
 
 #[derive(Clone)]
@@ -27,7 +27,7 @@ impl Interpreter {
         let node_location = node.location.clone();
 
         match node_kind {
-            NodeKind::FunctionCall(name, arguments) => match name.as_str() {
+            NodeKind::FunctionCall(function_name, arguments) => match function_name.as_str() {
                 "print" => {
                     for argument in arguments.iter() {
                         match &argument.kind {
@@ -39,9 +39,62 @@ impl Interpreter {
                             _ => {
                                 self.throw_err(format!(
                                         "Invalid argument of kind '{:?}' for function '{}', expected of kind 'String'",
-                                        argument.kind, name
+                                        argument.kind, function_name
                                     ), node_location.clone());
                             }
+                        }
+                    }
+                }
+
+                "syscall" => {
+                    if arguments.len() < 1 {
+                        self.throw_err(format!(
+                            "Insufficient amount of arguments for function '{}', at least 1 required.\n
+                            [Help]
+                            {}([command_name], [arguments]...)\n
+                            All the arguments are strings.",
+                            function_name,
+                            function_name
+                        ), node_location.clone());
+                    }
+
+                    let mut command_list = Vec::<String>::new();
+
+                    for argument in arguments.iter() {
+                        match &argument.kind {
+                            NodeKind::String(argument) => {
+                                command_list.push(argument.to_string());
+                            }
+
+                            _ => {
+                                self.throw_err(format!(
+                                        "Invalid argument of kind '{:?}' for function '{}', expected of kind 'String'",
+                                        argument.kind, function_name
+                                    ), node_location.clone());
+                            }
+                        }
+                    }
+
+                    let mut process_command = std::process::Command::new(command_list[0].clone());
+                    for command in command_list.iter() {
+                        process_command.arg(command);
+                    }
+
+                    match process_command.output() {
+                        Ok(ok) => {
+                            let mut stdout = io::stdout();
+                            stdout.write(&ok.stdout).and(stdout.flush()).ok();
+
+                            if !ok.stderr.is_empty() {
+                                stdout.write(&ok.stderr).and(stdout.flush()).ok();
+                            }
+                        }
+
+                        Err(err) => {
+                            self.throw_err(format!(
+                                "Could not execute command.\nReason: {}",
+                                err
+                            ), node_location.clone());
                         }
                     }
                 }
