@@ -1,6 +1,9 @@
-use crate::{tokens::{Token, TokenKind}, ast::Node};
+use crate::{
+    ast::Node,
+    tokens::{Token, TokenKind},
+};
 
-pub struct Parser{
+pub struct Parser {
     pub output_nodes: Vec<Node>,
 
     input_tokens: Vec<Token>,
@@ -8,10 +11,11 @@ pub struct Parser{
     current_token_index: usize,
 }
 
-const NEXT_ARGUMENT_TOKENS: [TokenKind; 3] = [TokenKind::CParen, TokenKind::String, TokenKind::Comma];
+const NEXT_ARGUMENT_TOKENS: [TokenKind; 3] =
+    [TokenKind::CParen, TokenKind::String, TokenKind::Comma];
 
-impl Parser{
-    pub fn new(input_tokens: Vec<Token>) -> Self{
+impl Parser {
+    pub fn new(input_tokens: Vec<Token>) -> Self {
         Self {
             input_tokens_length: input_tokens.len(),
             input_tokens,
@@ -50,7 +54,7 @@ impl Parser{
                                 arguments.push(Node::String(self.current_token().value));
                             }
 
-                            _ => unreachable!(),
+                            _ => {},
                         }
 
                         self.expect_next_either(&NEXT_ARGUMENT_TOKENS);
@@ -60,15 +64,11 @@ impl Parser{
                     self.expect_next(TokenKind::Semicolon);
                     self.next();
 
-                    self.output_nodes.push(Node::FunctionCall(function_name, arguments));
+                    self.output_nodes
+                        .push(Node::FunctionCall(function_name, arguments));
                 }
 
-                other => {
-                    self.throw_err(format!(
-                        "Unimplemented token kind '{:?}'",
-                        other,
-                    ))
-                },
+                other => self.throw_err(format!("Unimplemented token kind '{:?}'", other,)),
             }
 
             self.next();
@@ -80,8 +80,10 @@ impl Parser{
     }
 
     fn peek(&self) -> Option<Token> {
-        if self.current_token_index + 1 >= self.input_tokens_length { return None; }
-        
+        if self.current_token_index + 1 >= self.input_tokens_length {
+            return None;
+        }
+
         Some(self.input_tokens[self.current_token_index + 1].clone())
     }
 
@@ -99,7 +101,9 @@ impl Parser{
         let next_token = next_token.unwrap();
 
         if next_token.kind != expected_kind {
-            self.input_tokens[self.current_token_index].location.start_col = self.input_tokens[self.current_token_index].location.end_col;
+            self.input_tokens[self.current_token_index]
+                .location
+                .start_col = self.input_tokens[self.current_token_index].location.end_col;
 
             self.throw_err(format!(
                 "Expected token after '{}' to be of kind '{:?}', but found '{}' which is of kind '{:?}'",
@@ -158,14 +162,18 @@ impl Parser{
 
         println!("[Error]");
         println!("{}\n", msg.into());
-        println!("[Location] {}:{}:{}", current_token_location.file_path, start_line_number, start_col_number);
-        println!(" {} |", line_number_spaces);
         println!(
-            " {} | {}",
-            start_line_number,
-            current_token_location.line,
+            "[Location] {}:{}:{}",
+            current_token_location.file_path, start_line_number, start_col_number
         );
-        println!(" {} |{}{}", line_number_spaces, " ".repeat(start_col_number), "^".repeat(end_col_number-start_col_number+1));
+        println!(" {} |", line_number_spaces);
+        println!(" {} | {}", start_line_number, current_token_location.line,);
+        println!(
+            " {} |{}{}",
+            line_number_spaces,
+            " ".repeat(start_col_number),
+            "^".repeat(end_col_number - start_col_number + 1)
+        );
 
         std::process::exit(1);
     }
