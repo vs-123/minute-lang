@@ -8,6 +8,8 @@ pub struct Parser{
     current_token_index: usize,
 }
 
+const NEXT_ARGUMENT_TOKENS: [TokenKind; 2] = [TokenKind::CParen, TokenKind::String];
+
 impl Parser{
     pub fn new(input_tokens: Vec<Token>) -> Self{
         Self {
@@ -29,10 +31,24 @@ impl Parser{
                 TokenKind::Identifier => {
                     self.expect_next(TokenKind::OParen);
                     self.next();
-                    self.expect_next_either(&[TokenKind::CParen, TokenKind::String]);
+                    self.expect_next_either(&NEXT_ARGUMENT_TOKENS);
                     self.next();
-                    self.expect_next(TokenKind::CParen);
-                    self.next();
+
+                    // Arguments
+
+                    loop {
+                        let current_token = self.current_token();
+                        match current_token.kind {
+                            TokenKind::CParen => break,
+
+                            TokenKind::String => todo!(),
+
+                            _ => unreachable!(),
+                        }
+
+                        self.expect_next_either(&NEXT_ARGUMENT_TOKENS);
+                    }
+
                     self.expect_next(TokenKind::Semicolon);
                     self.next();
                 }
