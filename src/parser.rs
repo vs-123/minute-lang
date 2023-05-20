@@ -60,7 +60,14 @@ impl Parser {
                                 });
                             }
 
-                            _ => {},
+                            TokenKind::Comma => {}
+
+                            other => {
+                                self.throw_err(format!(
+                                    "Unexpected token {:?} for arguments",
+                                    other
+                                ))
+                            },
                         }
 
                         self.expect_next_either(&NEXT_ARGUMENT_TOKENS);
