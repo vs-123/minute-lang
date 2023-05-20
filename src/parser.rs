@@ -1,5 +1,5 @@
 use crate::{
-    ast::Node,
+    ast::{Node, NodeKind},
     tokens::{Token, TokenKind},
 };
 
@@ -51,7 +51,13 @@ impl Parser {
                             TokenKind::CParen => break,
 
                             TokenKind::String => {
-                                arguments.push(Node::String(self.current_token().value));
+                                let mut new_value = self.current_token().value
+                                    .replace("\\n", "\n");
+
+                                arguments.push(Node {
+                                    kind: NodeKind::String(new_value),
+                                    location: current_token.location,
+                                });
                             }
 
                             _ => {},
@@ -65,10 +71,13 @@ impl Parser {
                     self.next();
 
                     self.output_nodes
-                        .push(Node::FunctionCall(function_name, arguments));
+                        .push(Node {
+                            kind: NodeKind::FunctionCall(function_name, arguments),
+                            location: self.current_token().location,
+                        });
                 }
 
-                other => self.throw_err(format!("Unimplemented token kind '{:?}'", other,)),
+                other => self.throw_err(format!("Unexpected token kind '{:?}'", other,)),
             }
 
             self.next();

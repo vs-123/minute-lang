@@ -12,7 +12,7 @@ inspired from Lua
 this is a basic Hello World program in Minute
 
 ```
-print("Hello World");
+print("Hello World\n");
 ```
 
 ## Status
@@ -20,4 +20,6 @@ Implemented enough of lexer to lex hello world
 
 basic parser has been implemented!!
 
-implementing the interpreter now
+implemented the interpreter!
+
+it can finally run the hello world program!

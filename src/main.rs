@@ -1,12 +1,16 @@
 use std::{env, fs};
 
-pub mod tokens;
 pub mod ast;
+pub mod tokens;
 
 mod lexer;
 use lexer::Lexer;
-pub mod parser;
+
+mod parser;
 use parser::Parser;
+
+mod interpreter;
+use interpreter::Interpreter;
 
 fn main() {
     let args: Vec<String> = env::args().collect();
@@ -27,10 +31,13 @@ fn main() {
     let mut lexer = Lexer::new(source, args[1].clone());
     lexer.lex();
 
-    dbg!(&lexer.output_tokens);
+    // dbg!(&lexer.output_tokens);
 
     let mut parser = Parser::new(lexer.output_tokens);
     parser.parse();
 
-    dbg!(parser.output_nodes);
+    // dbg!(&parser.output_nodes);
+
+    let mut interpreter = Interpreter::new(parser.output_nodes);
+    interpreter.interpret();
 }

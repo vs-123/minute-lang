@@ -50,10 +50,10 @@ impl Lexer {
                         location: Location {
                             start_col: current_col,
                             start_line: current_line_number,
-            
+
                             end_col: current_col,
                             end_line: current_line_number,
-            
+
                             file_path: self.file_path.clone(),
                             line: self.current_line(),
                         },
@@ -70,10 +70,10 @@ impl Lexer {
                         location: Location {
                             start_col: current_col,
                             start_line: current_line_number,
-            
+
                             end_col: current_col,
                             end_line: current_line_number,
-            
+
                             file_path: self.file_path.clone(),
                             line: self.current_line(),
                         },
@@ -90,10 +90,10 @@ impl Lexer {
                         location: Location {
                             start_col: current_col,
                             start_line: current_line_number,
-            
+
                             end_col: current_col,
                             end_line: current_line_number,
-            
+
                             file_path: self.file_path.clone(),
                             line: self.current_line(),
                         },
@@ -110,10 +110,10 @@ impl Lexer {
                         location: Location {
                             start_col: current_col,
                             start_line: current_line_number,
-            
+
                             end_col: current_col,
                             end_line: current_line_number,
-            
+
                             file_path: self.file_path.clone(),
                             line: self.current_line(),
                         },
@@ -135,7 +135,9 @@ impl Lexer {
 
         while self.current_char().is_alphanumeric() {
             eaten_identifier.push(self.current_char());
-            if self.is_eof()  { break; }
+            if self.is_eof() {
+                break;
+            }
             self.current_char_index += 1;
         }
 
@@ -160,23 +162,22 @@ impl Lexer {
     fn eat_string(&mut self) {
         let start_col = self.current_col();
         let start_line = self.current_line_number();
-        
+
         let mut eaten_string = String::new();
         self.current_char_index += 1;
-        
+
         while self.current_char() != '"' {
             if self.is_eof() {
                 self.throw_err(format!(
                     "Missing end of string '\"' since line {} at column {}",
-                    start_line,
-                    start_col,
+                    start_line, start_col,
                 ))
             }
 
             eaten_string.push(self.current_char());
             self.current_char_index += 1;
         }
-        
+
         self.output_tokens.push(Token {
             kind: TokenKind::String,
             value: eaten_string,
@@ -209,7 +210,7 @@ impl Lexer {
 
     #[inline]
     fn is_eof(&self) -> bool {
-        self.current_char_index+1 >= self.source_code_length
+        self.current_char_index + 1 >= self.source_code_length
     }
 
     #[inline]
@@ -240,13 +241,12 @@ impl Lexer {
 
         println!("[Error]");
         println!("{}\n", msg.into());
-        println!("[Location] {}:{}:{}", self.file_path, current_line_number, current_col);
-        println!(" {} |", current_line_number_spaces);
         println!(
-            " {} | {}",
-            current_line_number,
-            self.current_line(),
+            "[Location] {}:{}:{}",
+            self.file_path, current_line_number, current_col
         );
+        println!(" {} |", current_line_number_spaces);
+        println!(" {} | {}", current_line_number, self.current_line(),);
         println!(" {} | {}^", current_line_number_spaces, arrow_spaces);
 
         std::process::exit(1);
