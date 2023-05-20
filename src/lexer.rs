@@ -95,6 +95,7 @@ impl Lexer {
 
         while self.current_char().is_alphanumeric() {
             eaten_identifier.push(self.current_char());
+            if self.is_eof()  { break; }
             self.current_char_index += 1;
         }
 
@@ -133,7 +134,7 @@ impl Lexer {
             eaten_string.push(self.current_char());
             self.current_char_index += 1;
         }
-
+        
         self.output_tokens.push(Token {
             kind: TokenKind::String,
             value: eaten_string,

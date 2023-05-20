@@ -27,7 +27,7 @@ fn main() {
     let mut lexer = Lexer::new(source, args[1].clone());
     lexer.lex();
 
-    // dbg!(lexer.output_tokens);
+    dbg!(&lexer.output_tokens);
 
     let mut parser = Parser::new(lexer.output_tokens);
     parser.parse();

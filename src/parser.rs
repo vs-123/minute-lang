@@ -44,13 +44,32 @@ impl Parser{
     }
 
     fn peek(&self) -> Option<Token> {
-        if self.is_last_token() { return None; }
+        if self.current_token_index + 1 >= self.input_tokens_length { return None; }
         
         Some(self.input_tokens[self.current_token_index + 1].clone())
     }
 
-    fn expect_next() {
+    fn expect_next(&mut self, expected_kind: TokenKind) {
+        let next_token = self.peek();
+        let current_token = self.current_token();
 
+        if next_token.is_none() {
+            self.throw_err(format!(
+                "Expected token after '{}' to be of kind '{:?}', but is end of file.",
+                current_token.value, expected_kind
+            ));
+        }
+
+        let next_token = next_token.unwrap();
+
+        if next_token.kind != expected_kind {
+            self.input_tokens[self.current_token_index].location.start_col = self.input_tokens[self.current_token_index].location.end_col;
+
+            self.throw_err(format!(
+                "Expected token after '{}' to be of kind '{:?}', but found '{}' which is of kind '{:?}'",
+                current_token.value, expected_kind, next_token.value, next_token.kind
+            ));
+        }
     }
 
     #[inline]
@@ -71,7 +90,7 @@ impl Parser{
     fn throw_err<T: Into<String>>(&self, msg: T) {
         let current_token_location = self.current_token().location;
         let start_line_number = current_token_location.start_line;
-        let end_line_number = current_token_location.end_line;
+        // let end_line_number = current_token_location.end_line;
 
         let start_col_number = current_token_location.start_col;
         let end_col_number = current_token_location.end_col;
