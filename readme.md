@@ -18,4 +18,4 @@ print("Hello World");
 ## Status
 Implemented enough of lexer to lex hello world
 
-Implementing the parser as of now
+basic parser has been implemented!!

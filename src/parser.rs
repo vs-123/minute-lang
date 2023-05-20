@@ -8,7 +8,7 @@ pub struct Parser{
     current_token_index: usize,
 }
 
-const NEXT_ARGUMENT_TOKENS: [TokenKind; 2] = [TokenKind::CParen, TokenKind::String];
+const NEXT_ARGUMENT_TOKENS: [TokenKind; 3] = [TokenKind::CParen, TokenKind::String, TokenKind::Comma];
 
 impl Parser{
     pub fn new(input_tokens: Vec<Token>) -> Self{
@@ -42,15 +42,19 @@ impl Parser{
 
                     loop {
                         let current_token = self.current_token();
+
                         match current_token.kind {
                             TokenKind::CParen => break,
 
-                            TokenKind::String => todo!(),
+                            TokenKind::String => {
+                                arguments.push(Node::String(self.current_token().value));
+                            }
 
                             _ => unreachable!(),
                         }
 
                         self.expect_next_either(&NEXT_ARGUMENT_TOKENS);
+                        self.next();
                     }
 
                     self.expect_next(TokenKind::Semicolon);
