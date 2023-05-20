@@ -1,3 +1,4 @@
+// hello.min
 print("Hello world!\n");
 
-syscall("echo", "hello world");
+syscall("ls");

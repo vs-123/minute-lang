@@ -49,12 +49,9 @@ impl Interpreter {
                 "syscall" => {
                     if arguments.len() < 1 {
                         self.throw_err(format!(
-                            "Insufficient amount of arguments for function '{}', at least 1 required.\n
-                            [Help]
-                            {}([command_name], [arguments]...)\n
-                            All the arguments are strings.",
+                            "Insufficient amount of arguments for function '{}', at least 1 required.\n[Help]\n{}",
                             function_name,
-                            function_name
+                            "([command_name], [arguments]...)\nAll the arguments are strings.",
                         ), node_location.clone());
                     }
 
@@ -76,7 +73,7 @@ impl Interpreter {
                     }
 
                     let mut process_command = std::process::Command::new(command_list[0].clone());
-                    for command in command_list.iter() {
+                    for command in command_list.iter().skip(1) {
                         process_command.arg(command);
                     }
 
@@ -126,5 +123,6 @@ impl Interpreter {
             line_number_spaces,
             "^".repeat(node_location.line.len())
         );
+        std::process::exit(1);
     }
 }

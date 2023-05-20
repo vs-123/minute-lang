@@ -29,6 +29,8 @@ impl Lexer {
 
     pub fn lex(&mut self) {
         while self.is_not_eof() {
+            // Comments
+            if self.current_line().starts_with("//") { self.next(); continue; }
             match self.current_char() {
                 c if c.is_whitespace() => {}
 
