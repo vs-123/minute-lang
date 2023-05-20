@@ -23,8 +23,11 @@ impl Parser{
         while self.is_not_last_token() {
             let current_token = self.current_token();
             match current_token.kind {
+                // This Identifier only refers to the function name
+                // E.g. print()
+                //      ^^^^^
                 TokenKind::Identifier => {
-                    
+                    self.expect_next(TokenKind::OParen);
                 }
 
                 other => {

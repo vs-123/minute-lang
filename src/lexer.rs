@@ -99,6 +99,8 @@ impl Lexer {
             self.current_char_index += 1;
         }
 
+        self.current_char_index -= 1;
+
         self.output_tokens.push(Token {
             kind: TokenKind::Identifier,
             value: eaten_identifier,
