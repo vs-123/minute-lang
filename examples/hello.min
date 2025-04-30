@@ -1,0 +1,5 @@
+// hello.min
+print("Hello world!\n");
+
+// Calls a system function
+syscall("ls");
